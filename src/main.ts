@@ -23,6 +23,8 @@ const stickerPaths = [
 const app = new Application()
 
 await app.init({
+  preference: 'webgl',
+  preserveDrawingBuffer: true,
   width: CANVAS_SIZE,
   height: CANVAS_SIZE,
   background: '#ffffff',
@@ -169,6 +171,8 @@ function updateRotation() {
 }
 
 function downloadCanvas() {
+  app.renderer.render(app.stage)
+
   app.canvas.toBlob((blob) => {
     if (!blob) {
       return
