@@ -6,16 +6,16 @@ const STICKER_COUNT = 1024
 const STICKER_SCALE = 0.2
 
 const stickerPaths = [
-  '/img/stickers/bttrider.png',
-  '/img/stickers/galaxy_force.png',
-  '/img/stickers/gamest.png',
-  '/img/stickers/garosupe.png',
-  '/img/stickers/jsr.png',
-  '/img/stickers/keibunsha.png',
-  '/img/stickers/okd_killer.png',
-  '/img/stickers/outrun.png',
-  '/img/stickers/sorcerian.png',
-] as const
+  'img/stickers/bttrider.png',
+  'img/stickers/galaxy_force.png',
+  'img/stickers/gamest.png',
+  'img/stickers/garosupe.png',
+  'img/stickers/jsr.png',
+  'img/stickers/keibunsha.png',
+  'img/stickers/okd_killer.png',
+  'img/stickers/outrun.png',
+  'img/stickers/sorcerian.png',
+].map((path) => `${import.meta.env.BASE_URL}${path}`) as string[]
 
 const app = new Application()
 
