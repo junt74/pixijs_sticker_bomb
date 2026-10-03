@@ -3,11 +3,13 @@ import './style.css'
 
 const CANVAS_SIZE = 1024
 const STICKER_COUNT = 1024
-const STICKER_SCALE = 0.2
+const DEFAULT_STICKER_SCALE = 0.2
 
 const stickerPaths = [
   'img/stickers/bttrider.png',
   'img/stickers/galaxy_force.png',
+  'img/stickers/gamest.png',
+  'img/stickers/garosupe.png',
   'img/stickers/gamest.png',
   'img/stickers/garosupe.png',
   'img/stickers/jsr.png',
@@ -36,6 +38,19 @@ if (!root) {
 const controls = document.createElement('div')
 controls.className = 'controls'
 
+const scaleLabel = document.createElement('label')
+scaleLabel.className = 'scale-control'
+scaleLabel.textContent = 'スケール'
+
+const scaleInput = document.createElement('input')
+scaleInput.type = 'number'
+scaleInput.min = '0.01'
+scaleInput.max = '2'
+scaleInput.step = '0.01'
+scaleInput.value = String(DEFAULT_STICKER_SCALE)
+scaleInput.setAttribute('aria-label', 'ステッカーのスケール')
+scaleLabel.append(scaleInput)
+
 const rearrangeButton = document.createElement('button')
 rearrangeButton.type = 'button'
 rearrangeButton.textContent = '再配置'
@@ -49,7 +64,7 @@ const downloadButton = document.createElement('button')
 downloadButton.type = 'button'
 downloadButton.textContent = '画像をダウンロード'
 
-controls.append(rearrangeButton, monochromeButton, downloadButton)
+controls.append(scaleLabel, rearrangeButton, monochromeButton, downloadButton)
 root.append(controls, app.canvas)
 
 const textures = await Promise.all(
@@ -59,6 +74,8 @@ const textures = await Promise.all(
 const monochromeFilter = new ColorMatrixFilter()
 monochromeFilter.desaturate()
 
+let stickerScale = DEFAULT_STICKER_SCALE
+
 function placeStickers() {
   app.stage.removeChildren()
 
@@ -67,7 +84,7 @@ function placeStickers() {
     const sticker = new Sprite(texture)
 
     sticker.anchor.set(0.5)
-    sticker.scale.set(STICKER_SCALE)
+    sticker.scale.set(stickerScale)
     sticker.rotation = Math.random() * Math.PI * 2
 
     // 回転後も中心がキャンバス内に収まる範囲で配置する。
@@ -83,6 +100,18 @@ function placeStickers() {
 
     app.stage.addChild(sticker)
   }
+}
+
+function updateScale() {
+  const scale = scaleInput.valueAsNumber
+
+  if (!Number.isFinite(scale) || scale <= 0) {
+    scaleInput.value = String(stickerScale)
+    return
+  }
+
+  stickerScale = scale
+  placeStickers()
 }
 
 function downloadCanvas() {
@@ -103,6 +132,12 @@ let monochrome = false
 
 placeStickers()
 
+scaleInput.addEventListener('change', updateScale)
+scaleInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    scaleInput.blur()
+  }
+})
 rearrangeButton.addEventListener('click', placeStickers)
 
 monochromeButton.addEventListener('click', () => {
