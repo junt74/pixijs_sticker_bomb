@@ -5,6 +5,8 @@ const CANVAS_SIZE = 1024
 const DEFAULT_STICKER_COUNT = 1024
 const MAX_STICKER_COUNT = 4096
 const DEFAULT_STICKER_SCALE = 0.2
+const DEFAULT_MAX_ROTATION_DEGREES = 90
+const MAX_ROTATION_DEGREES = 180
 
 const stickerPaths = [
   'img/stickers/bttrider.png',
@@ -63,6 +65,19 @@ scaleInput.value = String(DEFAULT_STICKER_SCALE)
 scaleInput.setAttribute('aria-label', 'ステッカーのスケール')
 scaleLabel.append(scaleInput)
 
+const rotationLabel = document.createElement('label')
+rotationLabel.className = 'scale-control'
+rotationLabel.textContent = '最大回転 (°)'
+
+const rotationInput = document.createElement('input')
+rotationInput.type = 'number'
+rotationInput.min = '0'
+rotationInput.max = String(MAX_ROTATION_DEGREES)
+rotationInput.step = '1'
+rotationInput.value = String(DEFAULT_MAX_ROTATION_DEGREES)
+rotationInput.setAttribute('aria-label', 'ランダム回転の最大角度')
+rotationLabel.append(rotationInput)
+
 const rearrangeButton = document.createElement('button')
 rearrangeButton.type = 'button'
 rearrangeButton.textContent = '再配置'
@@ -76,7 +91,7 @@ const downloadButton = document.createElement('button')
 downloadButton.type = 'button'
 downloadButton.textContent = '画像をダウンロード'
 
-controls.append(countLabel, scaleLabel, rearrangeButton, monochromeButton, downloadButton)
+controls.append(countLabel, scaleLabel, rotationLabel, rearrangeButton, monochromeButton, downloadButton)
 root.append(controls, app.canvas)
 
 const textures = await Promise.all(
@@ -88,6 +103,7 @@ monochromeFilter.desaturate()
 
 let stickerCount = DEFAULT_STICKER_COUNT
 let stickerScale = DEFAULT_STICKER_SCALE
+let maxRotationDegrees = DEFAULT_MAX_ROTATION_DEGREES
 
 function placeStickers() {
   app.stage.removeChildren()
@@ -98,7 +114,7 @@ function placeStickers() {
 
     sticker.anchor.set(0.5)
     sticker.scale.set(stickerScale)
-    sticker.rotation = Math.random() * Math.PI * 2
+    sticker.rotation = ((Math.random() * 2 - 1) * maxRotationDegrees * Math.PI) / 180
 
     // 回転後も中心がキャンバス内に収まる範囲で配置する。
     const radius = Math.min(
@@ -139,6 +155,19 @@ function updateScale() {
   placeStickers()
 }
 
+function updateRotation() {
+  const angle = rotationInput.valueAsNumber
+
+  if (!Number.isFinite(angle)) {
+    rotationInput.value = String(maxRotationDegrees)
+    return
+  }
+
+  maxRotationDegrees = Math.min(MAX_ROTATION_DEGREES, Math.max(0, angle))
+  rotationInput.value = String(maxRotationDegrees)
+  placeStickers()
+}
+
 function downloadCanvas() {
   app.canvas.toBlob((blob) => {
     if (!blob) {
@@ -163,10 +192,16 @@ countInput.addEventListener('keydown', (event) => {
     countInput.blur()
   }
 })
-scaleInput.addEventListener('change', updateScale
+scaleInput.addEventListener('change', updateScale)
 scaleInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
     scaleInput.blur()
+  }
+})
+rotationInput.addEventListener('change', updateRotation)
+rotationInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    rotationInput.blur()
   }
 })
 rearrangeButton.addEventListener('click', placeStickers)
