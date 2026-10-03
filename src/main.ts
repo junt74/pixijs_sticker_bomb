@@ -2,7 +2,7 @@ import { Application, Assets, ColorMatrixFilter, Sprite, Texture } from 'pixi.js
 import './style.css'
 
 const CANVAS_SIZE = 1024
-const STICKER_COUNT = 1024
+const DEFAULT_STICKER_COUNT = 1024
 const DEFAULT_STICKER_SCALE = 0.2
 
 const stickerPaths = [
@@ -36,6 +36,19 @@ if (!root) {
 const controls = document.createElement('div')
 controls.className = 'controls'
 
+const countLabel = document.createElement('label')
+countLabel.className = 'scale-control'
+countLabel.textContent = '枚数'
+
+const countInput = document.createElement('input')
+countInput.type = 'number'
+countInput.min = '1'
+countInput.max = '4096'
+countInput.step = '1'
+countInput.value = String(DEFAULT_STICKER_COUNT)
+countInput.setAttribute('aria-label', 'ステッカーの枚数')
+countLabel.append(countInput)
+
 const scaleLabel = document.createElement('label')
 scaleLabel.className = 'scale-control'
 scaleLabel.textContent = 'スケール'
@@ -62,7 +75,7 @@ const downloadButton = document.createElement('button')
 downloadButton.type = 'button'
 downloadButton.textContent = '画像をダウンロード'
 
-controls.append(scaleLabel, rearrangeButton, monochromeButton, downloadButton)
+controls.append(countLabel, scaleLabel, rearrangeButton, monochromeButton, downloadButton)
 root.append(controls, app.canvas)
 
 const textures = await Promise.all(
@@ -72,12 +85,13 @@ const textures = await Promise.all(
 const monochromeFilter = new ColorMatrixFilter()
 monochromeFilter.desaturate()
 
+let stickerCount = DEFAULT_STICKER_COUNT
 let stickerScale = DEFAULT_STICKER_SCALE
 
 function placeStickers() {
   app.stage.removeChildren()
 
-  for (let index = 0; index < STICKER_COUNT; index += 1) {
+  for (let index = 0; index < stickerCount; index += 1) {
     const texture = textures[Math.floor(Math.random() * textures.length)]
     const sticker = new Sprite(texture)
 
@@ -98,6 +112,18 @@ function placeStickers() {
 
     app.stage.addChild(sticker)
   }
+}
+
+function updateCount() {
+  const count = countInput.valueAsNumber
+
+  if (!Number.isInteger(count) || count < 1) {
+    countInput.value = String(stickerCount)
+    return
+  }
+
+  stickerCount = count
+  placeStickers()
 }
 
 function updateScale() {
@@ -130,7 +156,13 @@ let monochrome = false
 
 placeStickers()
 
-scaleInput.addEventListener('change', updateScale)
+countInput.addEventListener('change', updateCount)
+countInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    countInput.blur()
+  }
+})
+scaleInput.addEventListener('change', updateScale
 scaleInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
     scaleInput.blur()
