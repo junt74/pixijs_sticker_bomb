@@ -10,8 +10,6 @@ const stickerPaths = [
   'img/stickers/galaxy_force.png',
   'img/stickers/gamest.png',
   'img/stickers/garosupe.png',
-  'img/stickers/gamest.png',
-  'img/stickers/garosupe.png',
   'img/stickers/jsr.png',
   'img/stickers/keibunsha.png',
   'img/stickers/okd_killer.png',
