@@ -3,6 +3,7 @@ import './style.css'
 
 const CANVAS_SIZE = 1024
 const DEFAULT_STICKER_COUNT = 1024
+const MAX_STICKER_COUNT = 4096
 const DEFAULT_STICKER_SCALE = 0.2
 
 const stickerPaths = [
@@ -43,7 +44,7 @@ countLabel.textContent = '枚数'
 const countInput = document.createElement('input')
 countInput.type = 'number'
 countInput.min = '1'
-countInput.max = '4096'
+countInput.max = String(MAX_STICKER_COUNT)
 countInput.step = '1'
 countInput.value = String(DEFAULT_STICKER_COUNT)
 countInput.setAttribute('aria-label', 'ステッカーの枚数')
@@ -117,7 +118,7 @@ function placeStickers() {
 function updateCount() {
   const count = countInput.valueAsNumber
 
-  if (!Number.isInteger(count) || count < 1) {
+  if (!Number.isInteger(count) || count < 1 || count > MAX_STICKER_COUNT) {
     countInput.value = String(stickerCount)
     return
   }
