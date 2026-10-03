@@ -19,8 +19,37 @@ body,
 
 #app {
   display: grid;
-  place-items: center;
+  justify-items: center;
+  align-content: start;
+  gap: 16px;
   padding: 24px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+button {
+  appearance: none;
+  border: 1px solid #5f6368;
+  border-radius: 999px;
+  padding: 0.65em 1em;
+  color: #f1f3f4;
+  background: #303134;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #3c4043;
+}
+
+button[aria-pressed='true'] {
+  border-color: #8ab4f8;
+  background: #185abc;
 }
 
 #app canvas {
